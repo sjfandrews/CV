@@ -1,0 +1,99 @@
+---
+name: Shea J 
+surname: Andrews
+headcolor: 414141
+position: "Postdoctoral Fellow"
+address: "Icahn School of Medicine at Mount Sinai"
+phone: +1 646-251-1913
+email: "shea.andrews@mssm.edu"
+# www: 
+# twitter
+github: sjfandrews
+# linkedin: shea-andrews-979738142
+orcid: 0000-0002-1921-9470
+aboutme: | 
+  I am genetic epideimologist investigating the role of modifiable risk factors in Alzheimer's disease. 
+date: "`r format(Sys.time(), '%B %Y')`"
+output: vitae::awesomecv
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+# setwd("~/GitCode/CV/")
+library(vitae)
+library(tidyverse)
+library(tinytex)
+library(rorcid)
+library(lubridate)
+library(glue)
+
+
+orcid_id <- as.orcid(x = "0000-0002-1921-9470")
+
+```
+
+# Education and Qualifications
+
+```{r education}
+
+# edu <- bind_rows(rorcid::orcid_educations("0000-0002-1921-9470")$`0000-0002-1921-9470`$`affiliation-group`$summaries)
+# 
+# edu %>%
+#   detailed_entries(
+#     what = `education-summary.role-title`,
+#     when = glue::glue("{`education-summary.start-date.year.value`} - {`education-summary.end-date.year.value`}"),
+#     with = `education-summary.organization.name`,
+#     where = `education-summary.organization.address.city`
+#   )
+
+readr::read_csv("data/education.csv") %>%
+  tidyr::fill(-why) %>%
+  vitae::detailed_entries(what, when, with, where, why)
+
+```
+
+# Research Experience 
+```{r research}
+
+employ <- readr::read_csv("data/professional-employment.csv") %>% 
+  mutate(start = mdy(start), 
+         end = mdy(end)) %>% 
+  mutate(when = glue("{start.month} {start.year} - {end.month} {end.year}", 
+                     start.month = month(start, label= TRUE, abbr = TRUE), 
+                     start.year = year(start), 
+                     end.month = month(end, label= TRUE, abbr = TRUE), 
+                     end.year = year(end)), 
+         when = na_if(when, "NA NA - NA NA"),
+         when = str_replace(when, "NA NA", "Current"))
+
+employ %>%
+  tidyr::fill(-why) %>% 
+  vitae::detailed_entries(what, when, with, where, why) 
+
+```
+
+
+# Publications
+
+```{r publications}
+
+# my_dois <- rorcid::identifiers(rorcid::works("0000-0002-1921-9470"))
+# pubs <- rcrossref::cr_cn(dois = my_dois, format = "bibtex")
+# invisible(lapply(pubs, write, "/Users/sheaandrews/GitCode/CV/bib/pubs.bib", append=TRUE))
+
+bibliography_entries("bib/test_pubs.bib")
+```
+
+# Grants 
+
+```{r grants}
+grants <- readr::read_csv("data/grants.csv") 
+
+grants %>%
+  tidyr::fill(-why) %>% 
+  vitae::detailed_entries(what, when, with, where, why) 
+
+```
+
